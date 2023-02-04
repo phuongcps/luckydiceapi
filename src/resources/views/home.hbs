@@ -1,0 +1,417 @@
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-sm-5" id="user-info-input">
+                <div class="row form-group">
+                    <h4>Luật chơi</h4>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <ul>
+                            <li>Nếu kết quả &lt;= 3 : Bạn sẽ không nhận được gì cả</li>
+                            <li>Nếu kết quả &gt;= 4 : : Bạn sẽ nhận được phần thưởng là một voucher</li>
+                            <li>Giá trị Voucher sẽ là 10 x Số lần liên tiếp bạn quay có kết quả >= 4 (Ví dụ : Bạn quay 2 lần liên tiếp >= 4 thì lần 2 sẽ nhận được voucher có giá trị là 20%, lần 3 sẽ là 30%)</li>
+                            <li>Giá trị voucher tối đa nhận được là 50%</li>
+                            <li>Ngoài ra bạn sẽ nhận được phần thưởng đặc biệt khi quay liên tiếp 3 lần có kết quả >= 4</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <h4>Thay đổi thông tin người chơi</h4>
+                </div>
+                <form action="/users/{{user._id}}?_method=PUT" method="POST" name="change-user">
+                    <div class="row form-group">
+                        <div class="col-sm-4">
+                            <label for="input-first-name">First Name <span class="text-danger">(*)</span></label>
+                        </div>
+                        <div class="col-sm-8">
+                            <input title="Firstname" name="firstName" data-checktype="required|name" data-property="firstName" class="form-control" id="input-first-name" value="{{user.firstName}}" type="text" placeholder="First name ...">
+                            <div class="form-message small valid-feedback">Firstname hợp lệ</div>
+                            <div class="form-message small invalid-feedback"></div>
+                            <small class="form-text text-muted">Firstname không được để trống</small>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-sm-4">
+                            <label for="input-last-name">Last Name <span class="text-danger">(*)</span></label>
+                        </div>
+                        <div class="col-sm-8">
+                            <input title="Lastname" name="lastName" data-checktype="required|name" data-property="lastName" class="form-control" value="{{user.lastName}}" id="input-last-name" type="text" placeholder="Last name ...">
+                            <div class="form-message small valid-feedback">Lastname hợp lệ</div>
+                            <div class="form-message small invalid-feedback"></div>
+                            <small class="form-text text-muted">Lastname không được để trống</small>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col text-center">
+                            <button id="btn-change-info-user" type="submit" class="btn btn-success">Thay đổi</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="row form-group">
+                    <h4>Đăng xuất</h4>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12 text-center">
+                        <a href="/auth/logout"><button class="btn btn-success">Đăng xuất</button></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 text-center">
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <button class="btn btn-success" id="button-casino-dice">Bắt đầu quay</button>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <img id="img-result-casino-dice" src="image/diceRound.gif" style="width:120px">
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <p id="prize-result-casino-dice" class="overflow-auto text-break"></p>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <h4 class="text-danger">Voucher</h4>
+                        <img id="voucher-prize-img" src="image/voucher.png" alt="Voucher" class="w-50">
+                        <p id="voucher-prize-detail"></p>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <h4 class="text-danger">Bonus Prize</h4>
+                        <img class="w-50 rounded mx-auto d-block" alt="Bonus Prize" src="image/no-present.jpg" id="bonus-prize-detail-img" style="display:block">
+                        <p id="bonus-prize-detail-text">Hãy quay số để nhận phần thưởng</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-sm-3" id="dice-detail-history">
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <h4>Tra cứu kết quả đã quay tại đây</h4>
+                    </div>
+                    <div class="col-sm-12 text-center">
+                        <input type="text" class="form-control mb-3" placeholder="Điền Id result cần check vào đây">
+                    </div>
+                    <div class="col-sm-12 text-center mb-4">
+                        <button class="btn btn-success">Tra cứu</button>
+                    </div>
+                    <div class="col-sm-12" id="dice-result-field" style="display:none;">
+                        <p title="_id"></p>
+                        <p title="dice">&#9673; Kết quả quay</p>
+                        <p title="voucher">&#9673; Voucher</p>
+                        <p title="prize">&#9673; Phần thưởng khác</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group my-5">
+            <div class="col-sm-12 text-center my-3">
+                <p class="h2">Thống kê lịch sử quay</p> 
+            </div>
+            <div id="button-history-data" class="col-sm-12 text-center mt-2">
+                <button title="dices" class="btn btn-success">Dice History</button>
+                <button title="vouchers"class="btn btn-info">Voucher History</button>
+                <button title="prizes"class="btn btn-info">Prize History</button>
+            </div>
+        </div>
+        <div class="row p-5">
+            <div class="col-sm-12">
+                <table id="table-history" class="table table-striped table-hover w-100">
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-bar"></div>
+<script>
+    /*** REGION 1 - Global variables - Vùng khai báo biến, hằng số, tham số TOÀN CỤC */
+    function getUserInfo () {
+        var user = {{{json user}}}
+        let info = {
+            getUserId : () => user._id,
+            getUserName : () => user.userName,
+            getFirstName : () => user.firstName,
+            getLastName : () => user.lastName
+        }
+        return info;
+    }
+    var user = getUserInfo()
+
+
+    /*** REGION 2 - Vùng gán / thực thi hàm xử lý sự kiện cho các elements */
+    // gán sự kiện click cho nút button 
+    $("#button-casino-dice").on("click",onBtnRollDiceResult)
+
+    $("#button-history-data button").on("click",function(){
+        onBtnShowData(this.title)
+    })
+
+    $("#dice-detail-history button").on("click",function(){
+        onBtnHistoryDetail()
+    })
+    
+
+    $("form[name=change-user]").on('submit',function(e){
+        e.preventDefault()
+        let form = $(this).serializeArray();
+        let data = {}
+        form.forEach(each => data[each.name] = each.value)
+        $.ajax({
+            url: `https://lucky-dice-app.herokuapp.com/users/${user.getUserId()}`,
+            method : "PUT",
+            dataType : "json",
+            data : data,
+            success : (value) => {
+                alert ("Đổi thành công")
+                location.reload();
+            },
+            error : (err) => console.log(err)
+        })
+    })
+
+    /*** REGION 3 - Event handlers - Vùng khai báo các hàm xử lý sự kiện */
+    // hàm xử lý sự kiện khi load trang
+    function onPageLoading() {
+        document.body.className="loading";
+        document.body.className="";
+    }
+
+    function onBtnRollDiceResult() {
+        // Khai báo cục bộ
+        var vUserInfo = {
+            userName : user.getUserName()
+        };
+
+        callApiDice(vUserInfo)
+    }
+    
+    function onBtnShowData (paramTypeData) {
+        
+        // Khai báo cục bộ
+        var userName = user.getUserName()
+        getHistoryData(paramTypeData,userName)
+
+        async function getHistoryData(paramTypeData,paramUserName) {
+            const vHISTORY_DATA = {
+                dices : "dice-history",
+                prizes : "prize-history",
+                vouchers : "voucher-history"
+            }
+            let status = 404;
+
+            document.body.className="loading"
+            await fetch (`https://lucky-dice-app.herokuapp.com/${vHISTORY_DATA[paramTypeData]}?userName=${paramUserName}`)
+                .then (res => {
+                        status = res.status;
+                        return res.json()
+                      })
+                .then (result => {
+                    if (result[paramTypeData].length == 0 ) {
+                        alert ("Không tồn tại data với User này")
+                        return;
+                    }
+                    exportDataToTable (paramTypeData,result[paramTypeData])
+                })
+                .catch (err => alert (err))
+
+            document.body.className=""
+        }
+    }
+
+    function onBtnHistoryDetail () {
+        var idResult = $("#dice-detail-history input").val();
+        if (!idResult) {
+            alert ("Chưa điền Id result")
+        } else {
+            callApiDiceDetail (idResult)
+        }
+    }
+
+    /*** REGION 4 - Common funtions - Vùng khai báo hàm dùng chung trong toàn bộ chương trình*/
+       
+    async function callApiDice (paramUserInfo) {    
+        
+        document.body.className="loading";
+        await fetch("https://lucky-dice-app.herokuapp.com/roll/",{
+            method : "POST",
+            headers : {
+                "Content-Type" : "application/json;charset=UTF-8"
+            },
+            body : JSON.stringify(paramUserInfo)
+        }).then (value => value.json())
+          .then (json => handlersGetDiceResponse (json))
+        document.body.className="";
+    }
+
+    async function callApiDiceDetail (paramId) {
+        let status = 404;
+        document.body.className="loading";
+
+        await fetch(`https://lucky-dice-app.herokuapp.com/dices-detail-history/${paramId}`)
+            .then(res => {
+                status = res.status ;
+                return res.json()
+            })
+            .then(result => {
+                if (status != 200) {
+                    alert (result.message);
+                    $("#dice-result-field").hide()
+                } else if (!result) {
+                    alert ("Không tìm thấy kết quả với Id trên")
+                    $("#dice-result-field").hide()
+                } else {
+                    $("#dice-result-field").show()
+                    exportDataToField (result)
+                }
+            })
+            .catch(err => {
+                alert(err.message)
+                $("#dice-result-field").hide();
+            })
+
+        document.body.className=""
+
+        function exportDataToField(paramResult) {
+            let voucherDetail = "Không có";
+            let prizeDetail = "Không có";
+
+            if (paramResult.voucher) {
+                voucherDetail = `<ul><li>Mã voucher : ${paramResult.voucher.maVoucher}</li><li>Giảm giá : ${paramResult.voucher.phanTramGiamGia}%</li></ul>`
+            }
+
+            if (paramResult.prize) {
+                prizeDetail = paramResult.prize.name
+            }
+
+            $("#dice-result-field [title=_id]").html(`&#9673; Id : ${paramResult._id}`)
+            $("#dice-result-field [title=dice]").html(`&#9673; Kết quả quay : ${paramResult.dice} nút`)
+            $("#dice-result-field [title=voucher]").html(`&#9673; Voucher : ${voucherDetail}`)
+            $("#dice-result-field [title=prize]").html(`&#9673; Phần thưởng khác : ${prizeDetail}`)
+        }    
+    }
+
+    function handlersGetDiceResponse (paramDiceRespond) {
+        var vBonusPrizeObject = {
+            "Ô tô" : ["image/car.jpg","Phần thưởng bonus của bạn là : Ô tô"],
+            "Mũ" : ["image/mu.jpg","Phần thưởng bonus của bạn là : Mũ"],
+            "Áo" : ["image/ao.jpg","Phần thưởng bonus của bạn là : Áo"],
+            "Xe máy" : ["image/xe-may.jpg","Phần thưởng bonus của bạn là : Xe máy"],
+            "null" : ["image/no-present.jpg","Hãy quay thêm để nhận được phần thưởng nhé"]
+        }
+
+        var vResponse = paramDiceRespond;
+        console.log (vResponse);
+        var vNumberResult = vResponse.dice;
+
+        var vResultDetailObject = {
+            win : function() {
+                    $("#prize-result-casino-dice").append("Chúc mừng bạn. Đây là phần thưởng của bạn");
+                    $("#voucher-prize-detail").html(`Mã voucher : ${vResponse.voucher.maVoucher}<br>`+
+                                                    `Phần trăm giảm giá : ${vResponse.voucher.phanTramGiamGia}%`);
+                    $("#voucher-prize-img").attr("src","image/voucher.png");
+                },
+
+            lose : function() {
+                    $("#prize-result-casino-dice").append("Cảm ơn bạn. Hãy cố gắng lần sau");
+                    $("#voucher-prize-detail").html(``);
+                    $("#voucher-prize-img").attr("src","image/no-present.jpg");
+                },
+        }
+
+        $("#img-result-casino-dice").attr("src",`image/${vNumberResult}.png`);
+        $("#bonus-prize-detail-img").attr("src",vBonusPrizeObject[vResponse.prize][0]);
+        $("#bonus-prize-detail-text").html(vBonusPrizeObject[vResponse.prize][1]);
+        $("#prize-result-casino-dice").html(`<b> Id result </b> : ${vResponse.id} <br> <br> Bạn đã đổ ra ${vNumberResult} nút. `);
+
+        vNumberResult > 3 ? vResultDetailObject.win() : vResultDetailObject.lose();
+    }
+
+    function exportDataToTable (paramDataType,paramResult) {
+        DataTable.isDataTable('#table-history') ? $("#table-history").DataTable().clear().destroy() : "";
+        $("#table-history").html("");
+
+        var dataType = {
+            dices : [
+                {data : "id",title : "Id",filterType:"input"},
+                {data : "dice",title : "Dice",filterType:"input"}
+            ],
+            prizes : [
+                {data : "id",title : "Id",filterType:"input"},
+                {data : "prize",title: "Giải thưởng",filterType:"input"}
+
+            ],
+            vouchers : [
+                {data : "id",title : "Id",filterType:"input"},
+                {data : "voucher.maVoucher",title : "Mã Voucher",filterType:"input"},
+                {data : "voucher.phanTramGiamGia",title : "Phần trăm giảm giá",filterType:"input"},
+            ]
+        }
+
+        var gUserTable = $("#table-history").DataTable({
+            columns : dataType[paramDataType],
+            scrollX : true,
+            scrollY : "500px",
+            scrollCollapse : true,
+            lengthMenu : [[15, 20, 25, 50, 100, -1], [15, 20, 25, 50, 100, "All"]],
+            columnDefs : [
+                {"className": "dt-center", "targets": "_all"}
+            ],
+            initComplete : function () {
+                var api = this.api();
+                $(api.table().footer()).empty()
+                $(api.table().header()).find("tr:eq(0)").clone().appendTo($(api.table().footer()));
+                $(api.table().header()).find("tr:eq(0)").clone().appendTo($(api.table().header()));
+                $(api.table().header()).find("tr:eq(1) th").each(function(bIndex){
+                let bType = $(api.settings())[0].aoColumns[bIndex].filterType;
+                $(this).removeClass("sorting sorting_asc sorting_desc");
+                switch (bType) {
+                    case "input" : {
+                    $(this).html(`<input type="text" class="form-control form-control-sm text-center" style="font-family: 'FontAwesome', Helvetica Neue" placeholder="&#xf002; Tìm">`)
+                            .on("keyup"," :input",function(){
+                                api.column($(this).parent().index()).search(this.value.trim()).draw();
+                            });
+                    } 
+                break;
+                    case "select" : {
+                    var bOptionData = $(api.settings())[0].aoColumns[bIndex].filterData;
+                    var bOption = ``;
+                    if(bOptionData) {for (let bValue of bOptionData) {
+                        bOption += `<option value=${bValue[0]}>${bValue[1]}</option>\n`
+                    } }
+                    $(this).html(`<select class="form-control form-control-sm text-left" style="font-family: 'FontAwesome', Helvetica Neue"></select>`)
+                            .on("change","select",function(){
+                                var regex = this.value == "" ? "" : '^\\b' + this.value + '\\b$'
+                                api.column($(this).parent().index()).search(regex,true,false).draw();
+                            })
+                            .find("select")
+                            .append(`<option selected disabled hidden>&#xf0d7; Chọn</option>`)
+                            .append($("<option/>",{html: "Tất cả", val : ""}))
+                            .append(bOption)
+                    };
+                break;
+                    default : {
+                    $(this).html(``)
+                    };
+                }
+                });
+
+                $(window).on("resize",function(){
+                    setTimeout(() => {api.columns.adjust()},500)
+                })
+            }
+        })
+
+        loadDataToTable(gUserTable,paramResult)
+    }
+
+function loadDataToTable (paramTable,paramData) {
+    paramTable.clear();
+    paramTable.rows.add(paramData);
+    paramTable.draw();
+}
+
+</script>
